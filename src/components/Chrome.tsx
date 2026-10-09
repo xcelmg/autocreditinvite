@@ -17,7 +17,7 @@ export function Header({ cta = true }: { cta?: boolean }) {
           <Logo />
         </Link>
         {cta ? (
-          <Link href="/#start" className="btn-primary px-4 py-2 text-small">
+          <Link href="/#start" className="btn-primary h-11 px-4 text-small">
             <span className="sm:hidden">Enter code</span>
             <span className="hidden sm:inline">Enter my Invitation Code</span>
           </Link>

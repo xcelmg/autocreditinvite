@@ -261,11 +261,11 @@ function Primary({
       {pending ? (
         <span key="pending" className="fade-up inline-flex items-center gap-2.5">
           {working && <Icon name="lock" className="h-[18px] w-[18px] shrink-0" />}
-          {pendingLabel}
+          <span className="truncate">{pendingLabel}</span>
         </span>
       ) : (
         <>
-          {children} <Icon name="arrow" className="h-5 w-5" />
+          <span>{children}</span> <Icon name="arrow" className="h-5 w-5" />
         </>
       )}
     </button>
@@ -338,7 +338,7 @@ function CodeStep({ view, action, pending, busy }: StepProps<"code">) {
           onClick={() => setHelp((h) => !h)}
           aria-expanded={help}
           aria-controls="portal-code-help"
-          className="link inline-flex min-h-11 items-center text-small"
+          className="link inline-flex min-h-11 items-center whitespace-nowrap text-small"
         >
           Where&apos;s my Invitation Code?
         </button>
@@ -470,9 +470,11 @@ function AnswersStep({ view, action, pending }: StepProps<"answers">) {
           Skip
         </button>
         <button type="submit" disabled={pending} className="btn-primary px-4 py-3.5 text-[17px]">
-          {pending ? "Saving…" : (
+          {pending ? (
+            <span>Saving…</span>
+          ) : (
             <>
-              Continue <Icon name="arrow" className="h-5 w-5" />
+              <span>Continue</span> <Icon name="arrow" className="h-5 w-5 max-[359px]:hidden" />
             </>
           )}
         </button>
@@ -593,8 +595,8 @@ function ContactStep({ view, action, pending, busy }: StepProps<"contact">) {
         <div aria-live="polite" className="sr-only">
           {sending ? `Sending your details securely to ${view.dealer.name}.` : ""}
         </div>
-        <Primary pending={pending} working={sending} blocked={!consent} pendingLabel={`Sending securely to ${view.dealer.name}…`}>
-          Continue to credit application
+        <Primary pending={pending} working={sending} blocked={!consent} pendingLabel="Sending securely…">
+          Continue
         </Primary>
         <div className="space-y-2">
           <p className="flex items-start gap-2 text-small text-ink-700">
@@ -604,13 +606,17 @@ function ContactStep({ view, action, pending, busy }: StepProps<"contact">) {
           <ValidThrough expires={view.expires} />
           <p className="flex items-start gap-2 text-small text-muted">
             <Icon name="lock" className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
-            <span>Encrypted, and shared only with {view.dealer.name}. We never sell your information.</span>
+            <span>
+              {pending
+                ? `Sending securely to ${view.dealer.name}…`
+                : `Encrypted, and shared only with ${view.dealer.name}. We never sell your information.`}
+            </span>
           </p>
         </div>
       </form>
       <form action={action} className="text-center">
         <input type="hidden" name="intent" value="back" />
-        <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-1.5 text-small font-medium text-muted transition-colors hover:text-ink-900">
+        <button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-small font-medium text-muted transition-colors hover:text-ink-900">
           <Icon name="back" className="h-4 w-4" /> Change my answers
         </button>
       </form>
@@ -740,8 +746,8 @@ function DoneStep({
             <p className="font-semibold text-ink-900">Your credit application isn&apos;t sent yet.</p>
             <p className="text-small text-muted">Your specialist can take it at your visit, or you can finish it now.</p>
           </div>
-          <button type="button" onClick={onReopen} className="btn-secondary shrink-0 px-4 py-2.5 text-small">
-            Finish it now <Icon name="arrow" className="h-4 w-4" />
+          <button type="button" onClick={onReopen} className="btn-secondary h-11 shrink-0 px-4 text-small">
+            <span>Finish it now</span> <Icon name="arrow" className="h-4 w-4" />
           </button>
         </div>
       )}
@@ -814,7 +820,7 @@ function DoneStep({
             rel="noopener noreferrer"
             className="btn-primary px-5 py-3.5 text-[16px]"
           >
-            <Icon name="map" className="h-5 w-5" /> Get directions
+            <Icon name="map" className="h-5 w-5" /> <span>Get directions</span>
           </a>
         ) : (
           <Link href="/" className="btn-primary px-5 py-3.5 text-[16px]">
@@ -990,8 +996,8 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
           </div>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 print:hidden sm:pl-[3.75rem]">
-          <a href="/invitation/visit.ics" download className="btn-secondary px-4 py-2.5 text-small">
-            <Icon name="download" className="h-4 w-4" /> Add to calendar
+          <a href="/invitation/visit.ics" download className="btn-secondary h-11 px-4 text-small">
+            <Icon name="download" className="h-4 w-4" /> <span>Add to calendar</span>
           </a>
           {phase === "ready" && slots && (
             <button
@@ -1002,7 +1008,7 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
                 setDay(booked.date);
                 setTime(booked.time);
               }}
-              className="link inline-flex min-h-11 items-center text-small"
+              className="link inline-flex min-h-11 items-center whitespace-nowrap text-small"
             >
               Change time
             </button>
@@ -1043,7 +1049,7 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
         aria-live="polite"
       >
         <span>No problem — your specialist will text you to find a time.</span>
-        <button type="button" onClick={() => setCollapsed(false)} className="link inline-flex min-h-11 items-center">
+        <button type="button" onClick={() => setCollapsed(false)} className="link inline-flex min-h-11 items-center whitespace-nowrap">
           Pick a time instead
         </button>
       </p>
@@ -1140,7 +1146,7 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
 function PrintButton() {
   return (
     <button type="button" onClick={() => window.print()} className="btn-secondary px-5 py-3.5 text-[16px]">
-      <Icon name="doc" className="h-5 w-5" /> Print or save this page
+      <Icon name="doc" className="h-5 w-5" /> <span>Print or save this page</span>
     </button>
   );
 }

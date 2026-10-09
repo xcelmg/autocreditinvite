@@ -85,7 +85,7 @@ export function CodeForm({ idPrefix = "", lift = false }: { idPrefix?: string; l
         onClick={() => setHelp((h) => !h)}
         aria-expanded={help}
         aria-controls={id("code-help")}
-        className="link mt-2 inline-flex min-h-11 items-center text-small"
+        className="link mt-2 inline-flex min-h-11 items-center whitespace-nowrap text-small"
       >
         Where&apos;s my Invitation Code?
       </button>

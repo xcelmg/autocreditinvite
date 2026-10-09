@@ -315,6 +315,33 @@ body {
     opacity: 0.7;
   }
 
+  /*
+   * A button is one line, at one height, in every state and at every width. Labels are kept short
+   * enough to fit at 320px; anything longer (a dealership name, say) ends in an ellipsis rather than
+   * wrapping into a tall pill. Text goes in a <span> so the ellipsis lands on it, not the icon.
+   */
+  .btn-primary,
+  .btn-secondary {
+    height: 3.5rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .btn-primary > *,
+  .btn-secondary > * {
+    min-width: 0;
+  }
+  .btn-primary > span,
+  .btn-secondary > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .btn-primary svg,
+  .btn-secondary svg {
+    flex-shrink: 0;
+  }
+
   .link {
     font-weight: 600;
     color: var(--color-brand-700);

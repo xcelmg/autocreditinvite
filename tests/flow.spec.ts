@@ -23,7 +23,7 @@ async function toCreditApplication(page: Page) {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Where should your specialist text you?");
   await page.fill("#phone", "3345550142");
   await page.locator('input[name="consent"]').check();
-  await page.getByRole("button", { name: /Continue to credit application/ }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Finish your credit application");
   // Let the step's view transition finish before typing into the new form.
   await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== "running"));

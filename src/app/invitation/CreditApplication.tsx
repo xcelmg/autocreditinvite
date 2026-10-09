@@ -209,7 +209,7 @@ export function CreditApplication({
               </label>
               <button
                 type="button"
-                className="-my-2 inline-flex min-h-11 items-center px-1 text-caption font-semibold text-brand-700 underline-offset-2 hover:underline"
+                className="-my-2 inline-flex min-h-11 items-center whitespace-nowrap px-1 text-caption font-semibold text-brand-700 underline-offset-2 hover:underline"
                 aria-controls="ssn"
                 aria-pressed={showSsn}
                 aria-label={showSsn ? "Hide Social Security number" : "Show Social Security number"}
@@ -316,17 +316,23 @@ export function CreditApplication({
           {sending ? (
             <span className="inline-flex items-center gap-2.5">
               <Icon name="lock" className="h-[18px] w-[18px] shrink-0" />{" "}
-              {waiting ? "Setting up your file…" : `Sending securely to ${dealer}…`}
+              <span className="truncate">{waiting ? "Setting up…" : "Sending securely…"}</span>
             </span>
           ) : (
             <>
-              Authorize and send <Icon name="arrow" className="h-5 w-5" />
+              <span>Authorize and send</span> <Icon name="arrow" className="h-5 w-5" />
             </>
           )}
         </button>
         <p className="flex items-start justify-center gap-2 text-center text-small text-muted">
           <Icon name="lock" className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
-          <span>Encrypted, shared only with {dealer} and the lenders it sends your application to, and never sold.</span>
+          <span>
+            {!sending
+              ? `Encrypted, shared only with ${dealer} and the lenders it sends your application to, and never sold.`
+              : waiting
+                ? `Setting up your file at ${dealer}, then sending your application.`
+                : `Sending securely to ${dealer}…`}
+          </span>
         </p>
       </form>
 
@@ -334,7 +340,7 @@ export function CreditApplication({
         <button
           type="button"
           disabled={sending}
-          className="inline-flex min-h-11 items-center text-small font-medium text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink-900"
+          className="inline-flex min-h-11 items-center whitespace-nowrap text-small font-medium text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink-900"
           onClick={() => {
             setSsn("");
             setDob("");
@@ -343,8 +349,9 @@ export function CreditApplication({
             onDone("skipped");
           }}
         >
-          Skip for now — my specialist can take it at my visit
+          Skip for now
         </button>
+        <p className="text-caption text-muted">Your specialist can take it at your visit.</p>
       </div>
     </section>
   );
