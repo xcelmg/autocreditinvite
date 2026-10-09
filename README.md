@@ -69,7 +69,7 @@ In the API's `MICROSITE_SITES` entry for this site:
 
 ## Copy rules
 
-Always "Invitation Code" (only the "where's my code" help says the mailer may label it PIN#). The specialist
+Always "Invitation Code", never "PIN" — not even in the "where's my code" help. The specialist
 *texts* — never promise "no calls". Never promise approval, rates or payments ("not everyone will qualify").
 Entering the code and contact details doesn't check credit; the credit application is a hard inquiry that may
 affect the score, and every place that mentions it says so.

@@ -73,7 +73,7 @@ const FAQ = [
   },
   {
     q: "Where do I find my Invitation Code?",
-    a: "On the front of your mailer: it's the 9-digit number by the barcode, sometimes labeled PIN. Scanning the QR code with your phone's camera opens this site with your Invitation Code already filled in.",
+    a: "It's the 9-digit number printed under the barcode on the invitation your dealership mailed you. Scanning the QR code with your phone's camera opens this site with your Invitation Code already filled in.",
   },
   {
     q: "Does it cost anything?",

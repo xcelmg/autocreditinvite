@@ -38,9 +38,8 @@ test("the home page leads with the code field and keeps the copy rules", async (
   await expect(body).not.toContainText(/xcel|fresh start|pre-?qualified|no calls|guaranteed/i);
   await expect(body).toContainText("hard inquiry");
   await expect(body).toContainText("not everyone will qualify");
-  // "PIN" appears only where the FAQ says what the mailer may call the code.
-  const text = (await body.innerText()).replace(/sometimes labeled PIN/g, "");
-  expect(text).not.toMatch(/\bPIN\b/);
+  // The code is always the "Invitation Code", never a PIN.
+  expect(await body.innerText()).not.toMatch(/\bPIN\b/);
 });
 
 test("the credit application validates, waits for the lead and sends", async ({ page }) => {

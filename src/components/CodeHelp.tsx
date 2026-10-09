@@ -1,6 +1,6 @@
 import { Mark } from "./Mark";
 
-/** Where the Invitation Code is on the mailer: by the barcode, sometimes labeled "PIN". */
+/** Where the Invitation Code is on the mailer: the 9-digit number printed under the barcode. */
 export function CodeHelp({ id }: { id: string }) {
   const bars = [0, 4, 6, 11, 14, 16, 21, 23, 27, 30, 34, 36, 41, 44, 46, 50, 55, 57, 61, 64, 68, 70, 75, 78, 81, 85, 88, 92, 95, 99, 102, 106];
   return (
@@ -9,7 +9,7 @@ export function CodeHelp({ id }: { id: string }) {
         viewBox="0 0 360 150"
         className="w-full max-w-md"
         role="img"
-        aria-label="Your mailer. The Invitation Code is the 9-digit number printed under the barcode, sometimes labeled PIN."
+        aria-label="Your mailer. The Invitation Code is the 9-digit number printed under the barcode."
         fill="none"
       >
         <rect x="4.5" y="4.5" width="351" height="141" rx="6" fill="var(--color-paper)" stroke="var(--color-line-strong)" />
@@ -30,15 +30,14 @@ export function CodeHelp({ id }: { id: string }) {
           ))}
         </g>
         <text x="263" y="118" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="12.5" fontWeight="700" fill="var(--color-ink-950)">
-          PIN# 123-456-789
+          123-456-789
         </text>
         {/* highlight */}
-        <rect x="200.5" y="103.5" width="125" height="21" rx="4" stroke="var(--color-brand-600)" strokeWidth="1.5" />
+        <rect x="213.5" y="103.5" width="99" height="21" rx="4" stroke="var(--color-brand-600)" strokeWidth="1.5" />
       </svg>
       <p className="mt-3 text-small text-ink-700">
-        Look on the front of your mailer for the <strong>9-digit number by the barcode</strong> — it&apos;s sometimes
-        labeled <strong>PIN</strong>. That number is your Invitation Code. Scanning the QR code with your phone camera
-        fills it in for you.
+        It&apos;s the <strong>9-digit number printed under the barcode</strong> on the invitation your dealership
+        mailed you. Scanning the QR code with your phone camera fills it in for you.
       </p>
     </div>
   );
