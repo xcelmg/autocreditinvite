@@ -92,7 +92,7 @@ affect the score, and every place that mentions it says so.
 | `MICROSITES_API_KEY` | this site's key (Sensitive) — the API stores only its hash |
 | `SESSION_SECRET` | 32+ random chars; signs the session cookie (required in production) |
 | `NEXT_PUBLIC_SITE_URL` | optional; default `https://autocreditinvite.com` |
-| `NEXT_PUBLIC_SUPPORT_EMAIL` | optional; the address on the privacy and terms pages (default `support@autocreditinvite.com`) |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | optional; the address on the privacy and terms pages (default `support@updash.com`) |
 
 Check the wiring at **`/api/health`**. The demo banner shows whenever the API is in demo mode.
 
