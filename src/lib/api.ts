@@ -223,8 +223,14 @@ export type CreditResult = "ok" | "lead_not_ready" | "invalid_ssn" | "invalid_do
  * Send the credit application. The values go straight to the API and
  * are never logged or kept here; only the outcome comes back.
  */
-export async function sendCreditApplication(code: string, ssn: string, dob: string, consentVersion: string): Promise<CreditResult> {
-  const r = await call("/v1/credit-applications", { code, ssn, dob, consent: true, consentVersion });
+export async function sendCreditApplication(
+  code: string,
+  ssn: string,
+  dob: string,
+  consentVersion: string,
+  channel: Channel | undefined,
+): Promise<CreditResult> {
+  const r = await call("/v1/credit-applications", { code, ssn, dob, consent: true, consentVersion, channel, ...(await visitorContext()) });
   if (r.status === 201 || r.status === 200) return "ok";
   const err = (r.json.error as { code?: string } | undefined)?.code;
   if (r.status === 409 && err === "lead_not_ready") return "lead_not_ready";

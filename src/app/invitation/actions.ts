@@ -248,7 +248,7 @@ export async function sendCredit(fd: FormData): Promise<CreditOutcome> {
   const dob = String(fd.get("dob") ?? "");
   if (ssn.length !== 9) return "invalid_ssn";
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return "invalid_dob";
-  const r = await sendCreditApplication(session.b, ssn, dob, CREDIT_CONSENT_VERSION);
+  const r = await sendCreditApplication(session.b, ssn, dob, CREDIT_CONSENT_VERSION, session.ch);
   if (r === "ok") {
     await writeSession({ ...session, ca: 1 });
     return "ok";
