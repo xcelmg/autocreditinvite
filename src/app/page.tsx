@@ -1,16 +1,19 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import { Footer, Header } from "@/components/Chrome";
 import { CodeForm } from "@/components/CodeForm";
-import { HeroPanel } from "@/components/Art";
 import { Parallax, Reveal } from "@/components/Motion";
 import { StickyCta } from "@/components/StickyCta";
 import { Icon, type IconName } from "@/components/Icon";
 import { LogoMark } from "@/components/Logo";
 import { BRING } from "@/lib/bring";
 import { site } from "@/lib/site";
+import hero from "@/images/hero.jpg";
 
 /* The home page has one job: get the Invitation Code entered. Every section
  * below the fold removes one doubt, in the order people raise them. */
+
+const HERO_ALT = "A smiling woman in the driver's seat of a new car at a dealership, holding up the key.";
 
 const FACTS = ["About 3 minutes", "Name and address already filled in", "A specialist texts you"];
 
@@ -29,7 +32,7 @@ const STEPS: { title: string; body: string }[] = [
   },
   {
     title: "Finish your credit application",
-    body: "Add your Social Security number and date of birth, and authorize the credit check. The dealership reviews it with its lenders before you visit.",
+    body: "A few more details and your OK, then it goes securely to the dealership, which reviews it with its lenders before you visit.",
   },
 ];
 
@@ -37,9 +40,9 @@ const NEED: { icon: IconName; title: string; body: string }[] = [
   { icon: "doc", title: "Your mailer", body: "For the 9-digit Invitation Code printed by the barcode." },
   { icon: "phone", title: "Your mobile phone", body: "Your specialist texts you there about your application and a time to visit." },
   {
-    icon: "card",
-    title: "Your Social Security number and date of birth",
-    body: "For the credit application. It's a hard inquiry, so we ask for your permission first.",
+    icon: "shield",
+    title: "Your OK for a credit check",
+    body: "The credit application is a hard inquiry, so we ask before anything is sent. You can also apply at your visit instead.",
   },
 ];
 
@@ -53,8 +56,8 @@ const FAQ = [
     a: "Entering your Invitation Code and contact details doesn't check your credit. The credit application does: when you send it, you authorize the dealership and the lenders it works with to obtain your credit report. That's a hard inquiry, which may affect your credit score. You'll be asked for your permission first, and you can skip it and let your specialist take your application at your visit instead.",
   },
   {
-    q: "Why do you need my Social Security number and date of birth?",
-    a: "Lenders need them to obtain your credit report and evaluate your application. They're sent over an encrypted connection to the dealership and the lenders it submits your application to, used for nothing else, and never sold.",
+    q: "How is my information protected?",
+    a: "Your application is sent over an encrypted connection to the dealership and the lenders it submits your application to. It's used for nothing else, and never sold.",
   },
   {
     q: "Will I be approved?",
@@ -89,9 +92,9 @@ export default function Home() {
     <>
       <Header cta={false} />
       <main id="main">
-        {/* Hero: the code field is the centre; the panel beside it shows what the site does. */}
+        {/* Hero: the code field is the centre; one photograph beside it (a band under the copy on phones). */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-[70rem] gap-x-10 px-5 pb-20 pt-8 sm:px-8 sm:pt-14 lg:grid-cols-12 lg:items-center lg:pb-24 lg:pt-16">
+          <div className="mx-auto grid max-w-[70rem] gap-x-10 px-5 pb-0 pt-8 sm:px-8 sm:pb-20 sm:pt-14 lg:grid-cols-12 lg:items-center lg:pb-24 lg:pt-16">
             <div id="start" className="scroll-mt-24 lg:col-span-7">
               <p className="eyebrow rise flex items-center gap-2" style={at(1)}>
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-600" aria-hidden="true" />
@@ -116,10 +119,28 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <Parallax className="mt-14 lg:col-span-5 lg:mt-0">
-              <div className="rise mx-auto max-w-[26rem] lg:max-w-none" style={at(3)}>
-                <HeroPanel />
-              </div>
+            {/* Phones: a full-bleed band. From sm: a rounded photo on a blue offset frame, with a chip over its edge. */}
+            <Parallax className="-mx-5 mt-12 sm:mx-0 lg:col-span-5 lg:mt-0">
+              <figure className="rise relative mx-auto sm:max-w-[34rem] sm:pb-4 sm:pr-4 lg:max-w-none" style={at(3)}>
+                <span
+                  className="absolute inset-0 left-4 top-4 hidden rounded-[1.75rem] border-2 border-brand-600 sm:block"
+                  aria-hidden="true"
+                />
+                <Image
+                  src={hero}
+                  alt={HERO_ALT}
+                  sizes="(min-width: 1024px) 26rem, (min-width: 640px) 34rem, 100vw"
+                  className="relative aspect-[16/10] w-full object-cover object-[58%_40%] sm:aspect-[4/3] sm:rounded-[1.75rem] sm:shadow-[0_2px_4px_rgba(22,24,29,0.08),0_32px_64px_-28px_rgba(22,24,29,0.5)] lg:aspect-[4/5] lg:object-[64%_45%]"
+                  preload
+                  placeholder="blur"
+                />
+                <figcaption className="absolute bottom-4 left-4 flex items-center gap-2.5 rounded-xl border border-line bg-paper px-4 py-3 text-ink-900 shadow-[0_16px_32px_-18px_rgba(22,24,29,0.45)] sm:bottom-0 sm:-left-5">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-white">
+                    <Icon name="lock" className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  </span>
+                  <span className="text-[14px] font-semibold">Sent securely to your dealership</span>
+                </figcaption>
+              </figure>
             </Parallax>
           </div>
         </section>

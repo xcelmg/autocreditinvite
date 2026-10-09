@@ -298,10 +298,13 @@ export function CreditApplication({
           <FieldMessage id="credit-consent-error" error={errors.consent} />
         </div>
         {failed && (
-          <p role="alert" className="rounded-lg border border-oops-700/30 bg-oops-50 px-4 py-3 text-[14px] font-medium text-oops-700">
-            {failed === "not_ready"
-              ? `${dealer} is still setting up your file. Please try again in a few minutes — or skip for now, and your specialist can take your application at your visit.`
-              : `We couldn't send your application just now. ${dealer} still has your contact details — please try again in a few minutes, or your specialist can take your application at your visit.`}
+          <p role="alert" className="flex items-start gap-2.5 rounded-lg border border-oops-700/30 bg-oops-50 px-4 py-3 text-[14px] font-medium text-oops-700">
+            <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+            <span>
+              {failed === "not_ready"
+                ? `${dealer} is still setting up your file. Please try again in a few minutes — or skip for now, and your specialist can take your application at your visit.`
+                : `We couldn't send your application just now. ${dealer} still has your contact details — please try again in a few minutes, or your specialist can take your application at your visit.`}
+            </span>
           </p>
         )}
         <div aria-live="polite" className="sr-only">
@@ -373,8 +376,9 @@ function FieldMessage({ id, error }: { id: string; error?: string }) {
   return (
     <div aria-live="polite">
       {error && (
-        <p id={id} className="mt-1.5 text-[14px] font-medium text-oops-700">
-          {error}
+        <p id={id} className="mt-1.5 flex items-start gap-1.5 text-[14px] font-medium text-oops-700">
+          <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
+          <span>{error}</span>
         </p>
       )}
     </div>

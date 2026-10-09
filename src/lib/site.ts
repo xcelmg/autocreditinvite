@@ -4,7 +4,7 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://autocreditinvite.com",
   tagline: "Your auto credit application, already started.",
   description:
-    "Enter the Invitation Code from your mailer, confirm it's you and send your auto credit application to the participating dealership in a few minutes. A specialist texts you with next steps.",
+    "Enter the Invitation Code from your mailer, confirm it's you and finish a short credit application with the participating dealership in a few minutes. A specialist texts you with next steps.",
   /** Where privacy and terms requests go. Set NEXT_PUBLIC_SUPPORT_EMAIL to override. */
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@updash.com",
 };

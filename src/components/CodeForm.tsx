@@ -6,6 +6,7 @@ import { heroCodeAction, type HeroResult } from "@/app/invitation/actions";
 import { Checking, MIN_CHECK_MS, wait } from "./Checking";
 import { formatPin } from "@/lib/format";
 import { CodeHelp } from "./CodeHelp";
+import { Icon } from "./Icon";
 
 /**
  * Home-page Invitation Code box. Looks the code up while the verification
@@ -74,8 +75,9 @@ export function CodeForm({ idPrefix = "", lift = false }: { idPrefix?: string; l
         {checking && <Checking dealer={dealer} className="mt-3" />}
         <div aria-live="polite">
           {error && !checking && (
-            <p id={id("code-error")} className="fade-up mt-3 rounded-lg border border-oops-700/15 bg-oops-50 px-4 py-3 text-small font-medium text-oops-700">
-              {error}
+            <p id={id("code-error")} className="fade-up mt-3 flex items-start gap-2.5 rounded-lg border border-oops-700/25 bg-oops-50 px-4 py-3 text-small font-medium text-oops-700">
+              <Icon name="alert" className="mt-px h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+              <span>{error}</span>
             </p>
           )}
         </div>

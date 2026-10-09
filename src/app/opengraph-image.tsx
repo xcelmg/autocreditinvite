@@ -10,27 +10,19 @@ export const contentType = "image/png";
 
 const MUTED = "#5a606b";
 
+/* The share card: the lockup and headline on the canvas, the hero photograph bled to the right edge
+ * (a 520 × 655 crop of src/images/hero.jpg in assets/, read at build time like the fonts). */
 export default async function OgImage() {
-  const [bold, semi] = await Promise.all([
+  const [bold, semi, photo] = await Promise.all([
     readFile(join(process.cwd(), "assets/sora-700.woff")),
     readFile(join(process.cwd(), "assets/sora-600.woff")),
+    readFile(join(process.cwd(), "assets/og-photo.jpg")),
   ]);
-  const rows = ["Invitation Code", "Name and address", "Mobile number"];
+  const src = `data:image/jpeg;base64,${photo.toString("base64")}`;
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          background: BRAND.canvas,
-          color: BRAND.ink,
-          fontFamily: "Sora",
-          padding: "64px 72px",
-          gap: 56,
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", background: BRAND.canvas, color: BRAND.ink, fontFamily: "Sora" }}>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1, padding: "64px 56px 64px 72px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <Mark shield={BRAND.ink} check={BRAND.red} halo={BRAND.canvas} size={58} />
             <div style={{ display: "flex", alignItems: "baseline", fontSize: 42, fontWeight: 700, letterSpacing: -1.4 }}>
@@ -43,41 +35,16 @@ export default async function OgImage() {
             <div>Your auto credit</div>
             <div>application,</div>
             <div style={{ color: BRAND.blue }}>already started.</div>
+            <div style={{ width: 56, height: 4, borderRadius: 2, background: BRAND.red, marginTop: 26 }} />
           </div>
-          <div style={{ display: "flex", fontSize: 24, fontWeight: 600, color: MUTED }}>
-            Enter your Invitation Code · About 3 minutes
+          <div style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 24, fontWeight: 600, color: MUTED }}>
+            <div style={{ display: "flex", flexShrink: 0, whiteSpace: "nowrap", background: BRAND.blue, color: "#ffffff", borderRadius: 12, padding: "12px 20px", fontSize: 22 }}>
+              Enter your Invitation Code
+            </div>
+            About 3 minutes
           </div>
         </div>
-        <div
-          style={{
-            width: 400,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            background: BRAND.ink,
-            borderRadius: 28,
-            padding: 32,
-            gap: 14,
-            color: "#ffffff",
-          }}
-        >
-          {rows.map((r) => (
-            <div key={r} style={{ display: "flex", alignItems: "center", gap: 16, background: "rgba(255,255,255,0.07)", borderRadius: 16, padding: "18px 20px", fontSize: 24, fontWeight: 600 }}>
-              <div style={{ width: 34, height: 34, borderRadius: 17, background: "rgba(255,255,255,0.14)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m5 12.5 4.5 4.5L19 7.5" />
-                </svg>
-              </div>
-              {r}
-            </div>
-          ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 16, background: BRAND.blue, borderRadius: 16, padding: "18px 20px", fontSize: 24, fontWeight: 700 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 17, background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: BRAND.blue, fontSize: 20 }}>
-              4
-            </div>
-            Credit application
-          </div>
-        </div>
+        <img src={src} width={520} height={630} alt="" style={{ width: 520, height: 630, objectFit: "cover" }} />
       </div>
     ),
     {

@@ -166,7 +166,7 @@ function Stepper({ step, complete }: { step: Step; complete: boolean }) {
                   done
                     ? "bg-brand-600 text-white"
                     : active
-                      ? "bg-paper text-brand-700 ring-[1.5px] ring-brand-600 shadow-[0_0_0_5px_rgba(29,90,214,0.14)]"
+                      ? "bg-paper text-brand-700 ring-[1.5px] ring-brand-600 shadow-[0_0_0_5px_color-mix(in_srgb,var(--color-brand-600)_14%,transparent)]"
                       : "bg-paper text-subtle ring-1 ring-line-strong"
                 }`}
               >
@@ -227,11 +227,12 @@ function Alert({ children, tone = "error" }: { children: React.ReactNode; tone?:
   return (
     <p
       role={tone === "error" ? "alert" : "status"}
-      className={`fade-up rounded-lg border px-4 py-3 text-small font-medium ${
-        tone === "error" ? "border-oops-700/15 bg-oops-50 text-oops-700" : "border-brand-100 bg-brand-50 text-brand-800"
+      className={`fade-up flex items-start gap-2.5 rounded-lg border px-4 py-3 text-small font-medium ${
+        tone === "error" ? "border-oops-700/25 bg-oops-50 text-oops-700" : "border-brand-100 bg-brand-50 text-brand-800"
       }`}
     >
-      {children}
+      <Icon name={tone === "error" ? "alert" : "info"} className="mt-px h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+      <span>{children}</span>
     </p>
   );
 }
@@ -670,8 +671,9 @@ function FieldError({ id, error }: { id: string; error?: string }) {
   return (
     <div aria-live="polite">
       {error && (
-        <p id={id} className="mt-1.5 text-[14px] font-medium text-oops-700">
-          {error}
+        <p id={id} className="mt-1.5 flex items-start gap-1.5 text-[14px] font-medium text-oops-700">
+          <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
+          <span>{error}</span>
         </p>
       )}
     </div>

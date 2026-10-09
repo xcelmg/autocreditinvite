@@ -10,8 +10,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // The OG image reads its fonts from disk at build/request time.
-  outputFileTracingIncludes: { "/opengraph-image": ["./assets/sora-700.woff", "./assets/sora-600.woff"] },
+  // The OG image reads its fonts and photo crop from disk at build/request time.
+  outputFileTracingIncludes: { "/opengraph-image": ["./assets/sora-700.woff", "./assets/sora-600.woff", "./assets/og-photo.jpg"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
