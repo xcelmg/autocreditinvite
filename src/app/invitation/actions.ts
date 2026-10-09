@@ -11,7 +11,7 @@ import {
   type SlotsResult,
 } from "@/lib/api";
 import { cleanDetails, DETAIL_KEYS } from "@/lib/details";
-import { answersView, contactView, doneView, identityView, viewFromSession, type FlowView } from "@/lib/flow";
+import { answersView, contactView, doneView, identityView, viewFromSession, unavailable, type FlowView } from "@/lib/flow";
 import { clearSession, readSession, writeSession, type Session } from "@/lib/session";
 
 /*
@@ -53,12 +53,12 @@ const CODE_ERRORS = {
 
 type Found = Extract<Lookup, { status: "found" }>;
 
-/** Re-read the invitation for this session, or the code-step error to show. */
+/** Re-read the invitation for this session, or the code-step error to show (a retry when the API didn't answer). */
 async function current(session: Session): Promise<Found | FlowView> {
   const found = await lookupInvitation(session.b);
   if (found.status === "found") return found;
-  const error =
-    found.status === "unavailable" ? CODE_ERRORS.unavailable : found.status === "inactive" ? CODE_ERRORS.inactive : CODE_ERRORS.timeout;
+  if (found.status === "unavailable") return unavailable();
+  const error = found.status === "inactive" ? CODE_ERRORS.inactive : CODE_ERRORS.timeout;
   if (found.status === "inactive") await clearSession();
   return { step: "code", error };
 }
@@ -170,6 +170,8 @@ async function submitContact(session: Session, fd: FormData): Promise<FlowView> 
     timeoffset: tz,
     details: session.d,
   });
+  // No answer from the API: nothing changes here, and the visitor retries the same submit.
+  if (!result.ok && result.reason === "unavailable") return unavailable();
   if (!result.ok) {
     return contactView(invitation, campaign, {
       error: "We couldn't save that just now. Please try again in a moment — nothing was lost.",
@@ -208,6 +210,8 @@ async function book(session: Session, fd: FormData): Promise<FlowView> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{1,2}:\d{2} ?[AP]M$/i.test(time)) {
     return doneView(session, invitation, campaign, { bookError: "Please pick a day and a time." });
   }
+  // A retry of the time this visitor already has: it's booked, so don't book (and text) it again.
+  if (session.ap?.d === date && session.ap.t === time) return doneView(session, invitation, campaign);
   const r = await bookAppointment(session.b, date, time, session.ch);
   if (r.status === "booked") {
     const z = /^[A-Za-z][A-Za-z0-9_+/-]{1,40}$/.test(zone) ? zone : (session.ap?.z ?? "");
@@ -222,6 +226,7 @@ async function book(session: Session, fd: FormData): Promise<FlowView> {
     });
   }
   if (r.status === "lead_not_ready") return doneView(session, invitation, campaign, { bookState: "not_ready" });
+  if (r.status === "unavailable") return unavailable();
   if (r.status === "invalid") {
     return doneView(session, invitation, campaign, { bookError: "That time isn't available. Please pick another." });
   }

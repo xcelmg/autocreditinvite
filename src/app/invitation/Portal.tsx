@@ -13,6 +13,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { flowAction, pollSlots } from "./actions";
+import { bookRetryMessage, retryMessage } from "@/lib/retry";
 import type { Slots } from "@/lib/api";
 import { Checking, MIN_CHECK_MS, wait } from "@/components/Checking";
 import type { FlowView } from "@/lib/flow";
@@ -36,15 +37,33 @@ type Busy = { intent: string; dealer: string | null };
 /** How the credit application ended in this visit: sent, skipped, or still open (null). */
 type CreditDone = "sent" | "skipped" | null;
 
+/**
+ * Post a step. A request that doesn't get through (no signal, a timeout, the API down) keeps this screen and what
+ * was typed, and flags a retry alert for the button that sent it.
+ */
+async function post(prev: FlowView, fd: FormData): Promise<FlowView> {
+  const next = await flowAction(prev, fd).catch((): FlowView => ({ step: "code", failed: { kind: "network", intent: "", at: 0 } }));
+  if (!next.failed) return next;
+  const intent = String(fd.get("intent") ?? "") + (fd.get("skip") ? ":skip" : "");
+  return { ...prev, failed: { kind: next.failed.kind, intent, at: Date.now() } };
+}
+
+/** The checkboxes, radios and selects on the current screen, in page order. */
+const choices = (el: HTMLElement | null) =>
+  [...(el?.querySelectorAll<HTMLInputElement | HTMLSelectElement>("input[type=checkbox], input[type=radio], select") ?? [])];
+
+/** What each of those holds: ticked or not, or the chosen option. */
+const picked = (el: HTMLElement | null) => choices(el).map((c) => (c instanceof HTMLSelectElement ? c.value : c.checked));
+
 export function Portal({ initial }: { initial: FlowView }) {
   const [busy, setBusy] = useState<Busy>({ intent: "", dealer: null });
   // How the credit application ended on the result in this visit: sent, skipped, or still open (null).
   const [credit, setCredit] = useState<CreditDone>(null);
   const [view, dispatch, pending] = useActionState<FlowView, FormData>(async (prev, fd) => {
-    if (fd.get("intent") !== "code") return flowAction(prev, fd);
+    if (fd.get("intent") !== "code") return post(prev, fd);
     // The Invitation Code check plays for at least ~900 ms on success; a failure shows at once.
     const started = Date.now();
-    const next = await flowAction(prev, fd);
+    const next = await post(prev, fd);
     if (next.step === "code") return next;
     if (next.step === "identity") setBusy({ intent: "code", dealer: next.dealer.name });
     await wait(MIN_CHECK_MS - (Date.now() - started));
@@ -52,6 +71,19 @@ export function Portal({ initial }: { initial: FlowView }) {
   }, initial);
   const topRef = useRef<HTMLDivElement>(null);
   const first = useRef(true);
+  const ticks = useRef<(boolean | string)[]>([]);
+
+  // React resets a form once its action settles. A failed send stays on the same screen, and the reset would clear
+  // the checkboxes, radios and selects the visitor chose (their state still holds them), so put them back.
+  useEffect(() => {
+    if (!view.failed) return;
+    const now = choices(topRef.current);
+    if (now.length !== ticks.current.length) return;
+    now.forEach((c, i) => {
+      if (c instanceof HTMLSelectElement) c.value = String(ticks.current[i]);
+      else c.checked = ticks.current[i] === true;
+    });
+  }, [view.failed]);
   // A new trip through the flow starts with the credit application open again.
   if (view.step !== "done" && credit) setCredit(null);
   const creditDone: CreditDone = view.step === "done" && view.credit === "sent" ? "sent" : credit;
@@ -70,6 +102,7 @@ export function Portal({ initial }: { initial: FlowView }) {
   /** Every form posts through here: note what's in flight, and tag the step transition's direction. */
   const action = (fd: FormData) => {
     const intent = String(fd.get("intent") ?? "");
+    ticks.current = picked(topRef.current);
     setBusy({ intent, dealer: null });
     startTransition(() => {
       addTransitionType(BACK_INTENTS.has(intent) ? "step-back" : "step-forward");
@@ -237,6 +270,12 @@ function Alert({ children, tone = "error" }: { children: React.ReactNode; tone?:
   );
 }
 
+/** The retry alert when the last request from this screen didn't get through; `label` is the button that sent it. */
+function Retry({ view, label }: { view: FlowView; label: string }) {
+  if (!view.failed) return null;
+  return <Alert key={view.failed.at}>{retryMessage(view.failed.intent === "back" ? "Back" : label)}</Alert>;
+}
+
 function Primary({
   pending,
   children,
@@ -293,7 +332,8 @@ function CodeStep({ view, action, pending, busy }: StepProps<"code">) {
   const [code, setCode] = useState(formatPin(view.code ?? ""));
   const [help, setHelp] = useState(false);
   const [edited, setEdited] = useState<object | null>(null);
-  const error = edited === view ? undefined : view.error;
+  const failed = edited === view ? undefined : view.failed;
+  const error = edited === view || failed ? undefined : view.error;
   return (
     <form action={action} className="space-y-6" noValidate>
       <input type="hidden" name="intent" value="code" />
@@ -327,7 +367,13 @@ function CodeStep({ view, action, pending, busy }: StepProps<"code">) {
         <Checking dealer={busy?.dealer ?? null} />
       ) : (
         <div aria-live="polite" id="code-msg">
-          {error ? <Alert>{error}</Alert> : view.notice ? <Alert tone="info">{view.notice}</Alert> : null}
+          {failed ? (
+            <Retry view={view} label="Find my invitation" />
+          ) : error ? (
+            <Alert>{error}</Alert>
+          ) : view.notice ? (
+            <Alert tone="info">{view.notice}</Alert>
+          ) : null}
         </div>
       )}
       <Primary pending={pending} pendingLabel="Checking…">
@@ -393,6 +439,7 @@ function IdentityStep({ view, action, pending }: StepProps<"identity">) {
           )}
         </div>
       </div>
+      <Retry view={view} label={view.failed?.intent === "notme" ? "That's not me" : "Yes, that's me"} />
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <form action={action}>
           <input type="hidden" name="intent" value="confirm" />
@@ -466,6 +513,7 @@ function AnswersStep({ view, action, pending }: StepProps<"answers">) {
         ))}
       </div>
 
+      <Retry view={view} label={view.failed?.intent === "answers:skip" ? "Skip" : "Continue"} />
       <div className="grid grid-cols-2 gap-3 border-t border-line pt-5">
         <button type="submit" name="skip" value="all" disabled={pending} className="btn-secondary px-4 py-3.5 text-[17px]">
           Skip
@@ -592,7 +640,8 @@ function ContactStep({ view, action, pending, busy }: StepProps<"contact">) {
           </label>
           <FieldError id="consent-error" error={consentError} />
         </div>
-        {view.error && <Alert>{view.error}</Alert>}
+        {view.error && !view.failed && <Alert>{view.error}</Alert>}
+        <Retry view={view} label="Continue" />
         <div aria-live="polite" className="sr-only">
           {sending ? `Sending your details securely to ${view.dealer.name}.` : ""}
         </div>
@@ -952,12 +1001,14 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
   const [day, setDay] = useState<string>(booked?.date ?? "");
   const [time, setTime] = useState<string>(booked?.time ?? "");
   const [seenView, setSeenView] = useState(view);
-  // React to each booking result once.
+  // React to each booking result once (a booking that didn't get through changes nothing: it shows a retry alert).
   if (seenView !== view) {
     setSeenView(view);
-    if (view.bookState === "not_ready") setRound((r) => r + 1);
-    if (view.bookState === "taken") setRefresh(view);
-    if (view.booked && !view.bookError && !view.bookState) setChanging(false);
+    if (!view.failed) {
+      if (view.bookState === "not_ready") setRound((r) => r + 1);
+      if (view.bookState === "taken") setRefresh(view);
+      if (view.booked && !view.bookError && !view.bookState) setChanging(false);
+    }
   }
   const { phase: polled, slots } = useSlots(round, refresh);
   const phase: Phase = view.bookState === "off" && seenView === view ? "gone" : polled;
@@ -1123,7 +1174,13 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
             ))}
           </div>
         </fieldset>
-        <div aria-live="polite">{bookError && <Alert>{bookError}</Alert>}</div>
+        <div aria-live="polite">
+          {view.failed?.intent === "book" ? (
+            <Alert key={view.failed.at}>{bookRetryMessage("Book this time")}</Alert>
+          ) : (
+            bookError && <Alert>{bookError}</Alert>
+          )}
+        </div>
         <div className="flex flex-col gap-3 sm:flex-row-reverse sm:items-center sm:justify-between">
           <button
             type="submit"

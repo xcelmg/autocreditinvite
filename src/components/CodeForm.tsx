@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { heroCodeAction, type HeroResult } from "@/app/invitation/actions";
+import { retryMessage } from "@/lib/retry";
 import { Checking, MIN_CHECK_MS, wait } from "./Checking";
 import { formatPin } from "@/lib/format";
 import { CodeHelp } from "./CodeHelp";
@@ -20,7 +21,8 @@ export function CodeForm({ idPrefix = "", lift = false }: { idPrefix?: string; l
   const [dealer, setDealer] = useState<string | null>(null);
   const [state, action, pending] = useActionState<HeroResult, FormData>(async (prev, fd) => {
     const started = Date.now();
-    const r = await heroCodeAction(prev, fd);
+    // A lookup that never got an answer (no signal, a timeout) keeps the code and offers a retry.
+    const r = await heroCodeAction(prev, fd).catch((): HeroResult => ({ error: retryMessage("Find my invitation") }));
     if (!r.ok) return r;
     // Updates after an await render right away, so the last line can name the dealership.
     setDealer(r.dealer ?? null);

@@ -145,15 +145,17 @@ export type SubmitInput = {
   details?: Details;
 };
 
-export type SubmitResult = { ok: true; confirmation: string } | { ok: false };
+/** `unavailable`: the API didn't answer (network, timeout, 5xx), so the same submit can simply be retried. */
+export type SubmitResult = { ok: true; confirmation: string } | { ok: false; reason: "unavailable" | "rejected" };
 
 export async function submitResponse(input: SubmitInput): Promise<SubmitResult> {
   const body = { ...input, details: input.details && Object.keys(input.details).length ? input.details : undefined };
   const r = await call("/v1/responses", { ...body, ...(await visitorContext()) });
+  // 200 { duplicate: true } is a retry of a response the API already has: the same confirmation, nothing new queued.
   if ((r.status === 201 || r.status === 200) && r.json.ok === true) {
     return { ok: true, confirmation: String(r.json.confirmation) };
   }
-  return { ok: false };
+  return { ok: false, reason: r.status >= 500 ? "unavailable" : "rejected" };
 }
 
 export type ApiHealth = { reachable: boolean; mode: "live" | "demo" | "unknown" };
@@ -202,7 +204,7 @@ export async function getAppointmentSlots(code: string): Promise<SlotsResult> {
 
 export type BookResult =
   | { status: "booked"; when: string }
-  | { status: "slot_unavailable" | "lead_not_ready" | "off" | "invalid" };
+  | { status: "slot_unavailable" | "lead_not_ready" | "off" | "invalid" | "unavailable" };
 
 export async function bookAppointment(code: string, date: string, time: string, channel: Channel | undefined): Promise<BookResult> {
   const r = await call("/v1/appointments", { code, date, time, channel, ...(await visitorContext()) });
@@ -213,7 +215,9 @@ export async function bookAppointment(code: string, date: string, time: string, 
   if (r.status === 409 && err === "slot_unavailable") return { status: "slot_unavailable" };
   if (r.status === 409 && err === "lead_not_ready") return { status: "lead_not_ready" };
   if (r.status === 400) return { status: "invalid" };
-  // 409 appointments_off, 410 inactive, 404, 429, 503: hide booking; the specialist will text.
+  // No answer (network, timeout, 5xx): the visitor can retry the same time.
+  if (r.status >= 500) return { status: "unavailable" };
+  // 409 appointments_off, 410 inactive, 404, 429: hide booking; the specialist will text.
   return { status: "off" };
 }
 

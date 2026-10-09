@@ -22,7 +22,10 @@ export type DealerView = {
   phoneHref: string | null;
 };
 
-export type FlowView =
+/** Why a step's request didn't get through: the visitor's connection, or the microsites API not answering. */
+export type Failure = "network" | "unavailable";
+
+export type FlowView = (
   | { step: "code"; code?: string; error?: string; notice?: string }
   | {
       step: "identity";
@@ -62,7 +65,19 @@ export type FlowView =
       bookState?: "taken" | "not_ready" | "off";
       /** The credit application: "offer" it (the result opens on it), "sent" already, or "off" for this site. */
       credit: "offer" | "sent" | "off";
-    };
+    }
+) & {
+  /**
+   * Set when the last request didn't get through. The client keeps the screen (and what was typed) and shows a
+   * retry alert for the button that sent `intent`; `at` re-keys the alert on each failure.
+   */
+  failed?: { kind: Failure; intent: string; at: number };
+};
+
+/** What a step returns when the microsites API didn't answer: the client keeps the current screen and offers a retry. */
+export function unavailable(): FlowView {
+  return { step: "code", failed: { kind: "unavailable", intent: "", at: Date.now() } };
+}
 
 export function dealerView(c: Campaign): DealerView {
   const d = c.dealer;
