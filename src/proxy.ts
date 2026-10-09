@@ -1,14 +1,14 @@
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import {
-  deviceOf,
   isBot,
   isVisitorId,
   newVisitorId,
-  referrerOf,
-  utcDay,
-  VISIT_DAY_COOKIE,
+  QR_ARRIVAL_COOKIE,
+  QR_ARRIVAL_MAX_AGE,
+  visitorCookieOptions,
   VISITOR_COOKIE,
   VISITOR_HEADER,
+  VISITOR_MAX_AGE,
 } from "@/lib/visitor";
 
 /*
@@ -22,45 +22,15 @@ import {
  *    deep link, which opens the portal at "Is this you?". Other query params
  *    (utm_*) ride along.
  *
- * 2. Visit counting for the conversion funnel. Each visitor gets an anonymous
- *    first-party id; their first page view of the (UTC) day is reported as a
- *    `visit` with the channel (qr for /p/ deep links, web otherwise), device
- *    and traffic source. Bots and prefetches are skipped. The report runs
- *    after the response (waitUntil), so it never slows the page.
+ * 2. The anonymous visitor id for the conversion funnel: a first-party
+ *    cookie (mv_id), handed to this same request in a header when it is new so
+ *    the QR route can tag its `opened` event. A QR deep link also gets a
+ *    short-lived marker (mv_qr), so the visit counts as `qr`. Visits are
+ *    reported by the page itself (components/VisitBeacon.tsx → /api/visit), so
+ *    scanners that fetch pages without cookies or scripts never count.
  */
 
-const YEAR = 60 * 60 * 24 * 365;
-
-function reportVisit(request: NextRequest, event: NextFetchEvent, visitorId: string, channel: "qr" | "web") {
-  const url = process.env.MICROSITES_API_URL?.replace(/\/+$/, "");
-  const key = process.env.MICROSITES_API_KEY;
-  if (!url || !key) return;
-  const ua = request.headers.get("user-agent");
-  const body = {
-    event: "visit",
-    channel,
-    visitorId,
-    device: deviceOf(ua),
-    referrer:
-      channel === "qr"
-        ? "direct"
-        : referrerOf(request.headers.get("referer"), request.nextUrl.hostname, request.nextUrl.searchParams.get("utm_medium")),
-  };
-  event.waitUntil(
-    fetch(`${url}/v1/events`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-        "X-Client-IP": (request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown").trim(),
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(5000),
-    }).catch(() => undefined),
-  );
-}
-
-export function proxy(request: NextRequest, event: NextFetchEvent) {
+export function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
   // 1. UpDash QR redirect: ?pin=<code> on any page → /p/<code>.
@@ -72,7 +42,7 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
     return NextResponse.redirect(target);
   }
 
-  // 2. Visit counting (GET page views by people, not prefetches or bots).
+  // 2. Visitor id (GET page views by people, not prefetches or bots).
   const prefetch =
     request.headers.get("next-router-prefetch") ||
     /prefetch/i.test(request.headers.get("purpose") ?? "") ||
@@ -81,22 +51,15 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
 
   const existing = request.cookies.get(VISITOR_COOKIE)?.value;
   const visitorId = isVisitorId(existing) ? existing : newVisitorId();
-  const today = utcDay();
-  const counted = request.cookies.get(VISIT_DAY_COOKIE)?.value === today;
 
   // Hand a new id to this same request so the QR route can tag its `opened` event.
   const headers = new Headers(request.headers);
   headers.set(VISITOR_HEADER, visitorId);
   const res = NextResponse.next({ request: { headers } });
 
-  const secure = process.env.NODE_ENV === "production";
-  if (visitorId !== existing) {
-    res.cookies.set(VISITOR_COOKIE, visitorId, { httpOnly: true, secure, sameSite: "lax", path: "/", maxAge: YEAR });
-  }
-  if (!counted) {
-    reportVisit(request, event, visitorId, nextUrl.pathname.startsWith("/p/") ? "qr" : "web");
-    res.cookies.set(VISIT_DAY_COOKIE, today, { httpOnly: true, secure, sameSite: "lax", path: "/", maxAge: 60 * 60 * 26 });
-  }
+  if (visitorId !== existing) res.cookies.set(VISITOR_COOKIE, visitorId, visitorCookieOptions(VISITOR_MAX_AGE));
+  // The QR route redirects to the portal; the marker tells the visit beacon there how this visitor arrived.
+  if (nextUrl.pathname.startsWith("/p/")) res.cookies.set(QR_ARRIVAL_COOKIE, "1", visitorCookieOptions(QR_ARRIVAL_MAX_AGE));
   return res;
 }
 

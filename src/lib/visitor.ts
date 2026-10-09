@@ -1,8 +1,9 @@
 /*
  * Anonymous visitor context for the conversion funnel. Shared by the proxy
- * (which issues the cookies and records visits) and by server code (which
- * attaches the visitor and device to later funnel events). No personal data:
- * the id is random and lives only in a first-party cookie.
+ * (which issues the visitor cookie), the visit beacon (components/VisitBeacon.tsx
+ * and app/api/visit, which record visits) and server code (which attaches the
+ * visitor and device to later funnel events). No personal data: the id is
+ * random and lives only in a first-party cookie.
  */
 
 /** Random visitor id, kept a year so a visitor counts once across days. */
@@ -11,6 +12,17 @@ export const VISITOR_COOKIE = "mv_id";
 export const VISIT_DAY_COOKIE = "mv_day";
 /** Request header the proxy uses to hand a brand-new visitor id to the same request. */
 export const VISITOR_HEADER = "x-mv-id";
+/** Set by the proxy on a QR deep link, so the visit on the page it redirects to counts as `qr`. */
+export const QR_ARRIVAL_COOKIE = "mv_qr";
+/** Cookie lifetimes in seconds: the id a year, the visit day a little over a day, a QR arrival ten minutes. */
+export const VISITOR_MAX_AGE = 60 * 60 * 24 * 365;
+export const VISIT_DAY_MAX_AGE = 60 * 60 * 26;
+export const QR_ARRIVAL_MAX_AGE = 60 * 10;
+
+/** Attributes of the visitor cookies: first-party and out of reach of page scripts. */
+export function visitorCookieOptions(maxAge: number) {
+  return { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge } as const;
+}
 
 export type Device = "mobile" | "tablet" | "desktop";
 export type Referrer = "direct" | "search" | "social" | "email" | "other";
@@ -57,4 +69,9 @@ export const isVisitorId = (v: string | null | undefined): v is string => !!v &&
 
 export function utcDay(d = new Date()): string {
   return d.toISOString().slice(0, 10);
+}
+
+/** Pages a visit counts on: the landing pages and QR deep links, never a 404 or a probed path. */
+export function isEntryPath(path: string): boolean {
+  return path === "/" || path === "/invitation" || /^\/p\/\d{9}$/.test(path);
 }

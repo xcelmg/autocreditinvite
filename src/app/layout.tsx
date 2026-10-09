@@ -4,6 +4,7 @@ import "@fontsource-variable/hanken-grotesk";
 import "@fontsource-variable/sora";
 import "./globals.css";
 import { DemoBanner } from "@/components/Chrome";
+import { VisitBeacon } from "@/components/VisitBeacon";
 import { apiHealth } from "@/lib/api";
 import { site } from "@/lib/site";
 import { MOTION_GATE } from "@/lib/motion";
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </a>
         {demo && <DemoBanner />}
         {children}
+        <VisitBeacon />
         <Analytics />
       </body>
     </html>
