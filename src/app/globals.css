@@ -5,13 +5,10 @@
  *
  * Material: a cool white canvas, white cards with a hairline border and one
  * soft shadow; one real photograph in the hero. No gradients or grain.
- * Palette: deep charcoal ink; one confident crimson for every action — buttons,
- * links, focus, chosen chips, progress (brand-600, white text 5.7:1, 5.3:1 as
- * text on canvas); the blue used sparingly — the logo's check, a short rule
- * under section labels, info notes and confirmation marks (accent-600). Errors
- * are a darker brick (oops-700), never a filled button, and always carry an
- * alert icon, so they can't be read as the brand red. Every text colour here
- * passes WCAG AA on canvas and paper.
+ * Palette: deep charcoal ink; one confident blue for every action (brand-600,
+ * white text 6.0:1); the old AutoCredit red (accent-600, 5.4:1 on white) used
+ * sparingly — the logo's check, a short rule under section labels, the step
+ * numbers. Every text colour here passes WCAG AA on canvas and paper.
  * Type: Sora (600/700, geometric, tight) for headlines and the wordmark;
  * Hanken Grotesk for reading. Scale: 13 / 15 / 17 / 19 / 24 / 30 / 38 / 48 / 60.
  * Radii: 6 (tags) / 10 (controls) / 16 (cards). Spacing in 4px steps.
@@ -32,28 +29,22 @@
   --color-line: #e2e6ec;
   --color-line-strong: #c9cfd8;
 
-  /* Action red: buttons, links, focus, chosen chips, progress. 700 is hover, 800 pressed and text on tints. */
-  --color-brand-900: #6e0b16;
-  --color-brand-800: #8f0a18;
-  --color-brand-700: #ad0619;
-  --color-brand-600: #d0021b;
-  --color-brand-500: #e62a3e;
-  --color-brand-400: #f2717e;
-  --color-brand-100: #fbd9dd;
-  --color-brand-50: #fdf0f1;
+  --color-brand-900: #102d6e;
+  --color-brand-800: #133b8e;
+  --color-brand-700: #1748b0;
+  --color-brand-600: #1d5ad6;
+  --color-brand-500: #3b74e6;
+  --color-brand-400: #74a0f2;
+  --color-brand-100: #dbe6fb;
+  --color-brand-50: #eef3fd;
 
-  /* Accent blue, used sparingly: the logo's check, section rules, info notes, confirmation marks. */
-  --color-accent-900: #102d6e;
-  --color-accent-800: #133b8e;
-  --color-accent-700: #1748b0;
-  --color-accent-600: #1d5ad6;
-  --color-accent-500: #3b74e6;
-  --color-accent-100: #dbe6fb;
-  --color-accent-50: #eef3fd;
+  --color-accent-700: #b00000;
+  --color-accent-600: #d60000;
+  --color-accent-100: #fde2e2;
+  --color-accent-50: #fff1f1;
 
-  /* Errors: a darker brick, warmer than the brand red, always with an alert icon. */
-  --color-oops-700: #a8380c;
-  --color-oops-50: #fdf3ec;
+  --color-oops-700: #b42318;
+  --color-oops-50: #fdf1ef;
 
   --radius-card: 1rem;
   --radius-control: 0.625rem;
@@ -126,10 +117,10 @@ body {
     box-shadow:
       0 1px 2px rgba(22, 24, 29, 0.05),
       0 16px 40px -20px rgba(22, 24, 29, 0.28),
-      0 32px 64px -36px color-mix(in srgb, var(--color-brand-600) 30%, transparent);
+      0 32px 64px -36px rgba(29, 90, 214, 0.32);
   }
 
-  /* Answer chips: outline at rest, filled red when chosen. */
+  /* Answer chips: outline at rest, filled blue when chosen. */
   .pill {
     position: relative;
     display: inline-flex;
@@ -229,16 +220,13 @@ body {
   .field:focus {
     outline: none;
     border-color: var(--color-brand-600);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-600) 16%, transparent);
+    box-shadow: 0 0 0 4px rgba(29, 90, 214, 0.16);
   }
   .field[aria-invalid="true"] {
     border-color: var(--color-oops-700);
-    box-shadow: inset 0 0 0 1px var(--color-oops-700);
   }
   .field[aria-invalid="true"]:focus {
-    box-shadow:
-      inset 0 0 0 1px var(--color-oops-700),
-      0 0 0 4px color-mix(in srgb, var(--color-oops-700) 14%, transparent);
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.12);
   }
 
   /* The Invitation Code input: nine digits and two dashes must always fit, filled, at any width. The
@@ -283,7 +271,6 @@ body {
     }
   }
   .btn-primary:active {
-    background: var(--color-brand-800);
     transform: scale(0.99);
   }
   .btn-primary:disabled {
@@ -332,7 +319,7 @@ body {
     font-weight: 600;
     color: var(--color-brand-700);
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--color-brand-700) 35%, transparent);
+    text-decoration-color: rgba(23, 72, 176, 0.35);
     text-underline-offset: 4px;
     text-decoration-thickness: 1px;
     transition: text-decoration-color 0.15s;
@@ -390,7 +377,7 @@ body {
 :root {
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
 }
-/* A short blue rule under a section eyebrow; under motion it draws in left to right. */
+/* A short red rule under a section eyebrow; under motion it draws in left to right. */
 .eyebrow-rule::after {
   content: "";
   display: block;
@@ -548,7 +535,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--color-accent-50);
+  background: var(--color-brand-50);
 }
 /* Reduced motion: no travel, no scaling, no parallax; blocks still fade in over 400 ms. */
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 /*
  * The My Auto Credit mark: a rounded shield with a check. In full colour the
- * shield is a charcoal outline and the check is the accent blue, running
+ * shield is a charcoal outline and the check is the old AutoCredit red, running
  * out past the shield's right shoulder the way the old badge's check crossed
  * its gear. Pass `check` the same colour as `shield` for a one-colour mark.
  * `halo` is the colour behind the mark: it cuts a gap where the check crosses

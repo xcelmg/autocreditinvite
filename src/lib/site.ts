@@ -12,13 +12,9 @@ export const site = {
 /** Brand colours for the places CSS variables can't reach (favicon, apple icon, OG image). */
 export const BRAND = {
   ink: "#16181d",
-  /** The action red (brand-600): buttons, the "Credit" in the wordmark, the favicon. */
-  red: "#d0021b",
-  redDeep: "#ad0619",
-  /** The accent blue (accent-600): the logo's check. */
   blue: "#1d5ad6",
-  /** The accent blue on charcoal (accent-500), where accent-600 would sink. */
-  blueBright: "#3b74e6",
+  blueDeep: "#163f9c",
+  red: "#d60000",
   canvas: "#f5f7fa",
   paper: "#ffffff",
 };

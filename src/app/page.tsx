@@ -123,7 +123,7 @@ export default function Home() {
             <Parallax className="-mx-5 mt-12 sm:mx-0 lg:col-span-5 lg:mt-0">
               <figure className="rise relative mx-auto sm:max-w-[34rem] sm:pb-4 sm:pr-4 lg:max-w-none" style={at(3)}>
                 <span
-                  className="absolute inset-0 left-4 top-4 hidden rounded-[1.75rem] border-2 border-accent-600 sm:block"
+                  className="absolute inset-0 left-4 top-4 hidden rounded-[1.75rem] border-2 border-brand-600 sm:block"
                   aria-hidden="true"
                 />
                 <Image
@@ -267,7 +267,7 @@ export default function Home() {
         {/* Closing: the code field again, on a tinted band */}
         <Reveal as="section" motion="close" className="rule">
           <div className="mx-auto max-w-[70rem] px-5 py-20 sm:px-8 md:py-28">
-            <LogoMark className="h-12 w-12" halo="var(--color-accent-50)" />
+            <LogoMark className="h-12 w-12" halo="var(--color-brand-50)" />
             <h2 className="mt-6 max-w-[20ch] font-display text-display-1 text-ink-950">Ready when you are.</h2>
             <p className="measure mt-5 text-body text-muted sm:text-lede">
               Your invitation is good through the date printed on your mailer. Enter your Invitation Code to finish your

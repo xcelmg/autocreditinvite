@@ -37,7 +37,7 @@ export function Header({ cta = true }: { cta?: boolean }) {
 
 export function DemoBanner() {
   return (
-    <div className="border-b border-accent-100 bg-accent-50 px-4 py-2 text-center text-caption font-medium text-accent-900 print:hidden">
+    <div className="border-b border-brand-100 bg-brand-50 px-4 py-2 text-center text-caption font-medium text-brand-900 print:hidden">
       Demo mode — not connected to UpDash yet. Try Invitation Code <span className="font-mono font-semibold">123-456-789</span>.
       Nothing is saved.
     </div>

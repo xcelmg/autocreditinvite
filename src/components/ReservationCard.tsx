@@ -42,7 +42,7 @@ export function ReservationCard({
             {confirmation}
           </p>
         </div>
-        <Mark className="h-10 w-10 shrink-0" shield="#ffffff" check="var(--color-accent-500)" halo="var(--color-ink-950)" />
+        <Mark className="h-10 w-10 shrink-0" shield="#ffffff" check="var(--color-accent-600)" halo="var(--color-ink-950)" />
       </div>
       <dl className="grid gap-x-6 gap-y-5 p-5 sm:grid-cols-2 sm:p-6">
         <div className="sm:col-span-2">

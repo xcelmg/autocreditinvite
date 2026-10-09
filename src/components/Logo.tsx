@@ -2,7 +2,7 @@ import { Mark } from "./Mark";
 
 /*
  * The My Auto Credit lockup: the shield-and-check mark, then the wordmark set
- * in Sora — "my" small, "Auto" in charcoal, "Credit" in red. One component
+ * in Sora — "my" small, "Auto" in charcoal, "Credit" in blue. One component
  * draws the header, the footer and the 404.
  */
 

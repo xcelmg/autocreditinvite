@@ -129,8 +129,8 @@ export function CreditApplication({
         </p>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-accent-100 bg-accent-50 px-4 py-3 text-small text-accent-900">
-        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-600 text-white">
+      <div className="flex items-start gap-3 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3 text-small text-brand-900">
+        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white">
           <Icon name="check" className="h-3 w-3" strokeWidth={3} />
         </span>
         <span>
@@ -357,7 +357,7 @@ function Valid({ show }: { show: boolean }) {
   if (!show) return null;
   return (
     <span
-      className="pop-in pointer-events-none absolute right-3.5 top-1/2 -mt-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent-50 text-accent-600"
+      className="pop-in pointer-events-none absolute right-3.5 top-1/2 -mt-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-50 text-brand-600"
       aria-hidden="true"
     >
       <Icon name="check" className="h-3.5 w-3.5" strokeWidth={2.5} />
