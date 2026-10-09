@@ -166,7 +166,7 @@ function Stepper({ step, complete }: { step: Step; complete: boolean }) {
                   done
                     ? "bg-brand-600 text-white"
                     : active
-                      ? "bg-paper text-brand-700 ring-[1.5px] ring-brand-600 shadow-[0_0_0_5px_rgba(29,90,214,0.14)]"
+                      ? "bg-paper text-brand-700 ring-[1.5px] ring-brand-600 shadow-[0_0_0_5px_color-mix(in_srgb,var(--color-brand-600)_14%,transparent)]"
                       : "bg-paper text-subtle ring-1 ring-line-strong"
                 }`}
               >
@@ -227,11 +227,12 @@ function Alert({ children, tone = "error" }: { children: React.ReactNode; tone?:
   return (
     <p
       role={tone === "error" ? "alert" : "status"}
-      className={`fade-up rounded-lg border px-4 py-3 text-small font-medium ${
-        tone === "error" ? "border-oops-700/15 bg-oops-50 text-oops-700" : "border-brand-100 bg-brand-50 text-brand-800"
+      className={`fade-up flex items-start gap-2.5 rounded-lg border px-4 py-3 text-small font-medium ${
+        tone === "error" ? "border-oops-700/25 bg-oops-50 text-oops-700" : "border-accent-100 bg-accent-50 text-accent-800"
       }`}
     >
-      {children}
+      <Icon name={tone === "error" ? "alert" : "info"} className="mt-px h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+      <span>{children}</span>
     </p>
   );
 }
@@ -434,7 +435,7 @@ function AnswersStep({ view, action, pending }: StepProps<"answers">) {
       <Title kicker="A few questions" sub="Tap whatever fits — or skip. It takes about ten seconds.">
         {view.firstName ? `A little about your situation, ${view.firstName}` : "A little about your situation"}
       </Title>
-      <p className="flex items-start gap-3 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3 text-small font-medium text-brand-800">
+      <p className="flex items-start gap-3 rounded-lg border border-accent-100 bg-accent-50 px-4 py-3 text-small font-medium text-accent-800">
         <Icon name="shield" className="mt-0.5 h-5 w-5 shrink-0" />
         <span>Every question is optional, and none of them checks your credit. Your answers help your specialist line up lenders that fit.</span>
       </p>
@@ -645,7 +646,7 @@ function Field({
       <div className="relative">
         {children}
         {valid && !error && (
-          <span className="pop-in pointer-events-none absolute right-3.5 top-1/2 -mt-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-50 text-brand-600" aria-hidden="true">
+          <span className="pop-in pointer-events-none absolute right-3.5 top-1/2 -mt-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent-50 text-accent-600" aria-hidden="true">
             <Icon name="check" className="h-3.5 w-3.5" strokeWidth={2.5} />
           </span>
         )}
@@ -664,8 +665,9 @@ function FieldError({ id, error }: { id: string; error?: string }) {
   return (
     <div aria-live="polite">
       {error && (
-        <p id={id} className="mt-1.5 text-[14px] font-medium text-oops-700">
-          {error}
+        <p id={id} className="mt-1.5 flex items-start gap-1.5 text-[14px] font-medium text-oops-700">
+          <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
+          <span>{error}</span>
         </p>
       )}
     </div>
@@ -971,15 +973,15 @@ function Appointment({ view, action, pending }: StepProps<"done">) {
     return (
       <section
         aria-labelledby="appt-title"
-        className="fade-up rounded-xl border border-brand-100 bg-brand-50 p-5 sm:p-6"
+        className="fade-up rounded-xl border border-accent-100 bg-accent-50 p-5 sm:p-6"
         aria-live="polite"
       >
         <div className="flex gap-4">
-          <span className="pop-in flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+          <span className="pop-in flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-600 text-white">
             <Icon name="calendar" className="h-5 w-5" />
           </span>
           <div className="min-w-0">
-            <p className="label text-brand-800">Your visit</p>
+            <p className="label text-accent-800">Your visit</p>
             <h2 id="appt-title" className="mt-1 font-display text-display-3 text-ink-950">
               You&apos;re booked for {booked.when}.
             </h2>
@@ -1150,9 +1152,9 @@ function SuccessCheck() {
   return (
     <div className="relative mx-auto h-[72px] w-[72px]" aria-hidden="true">
       <svg viewBox="0 0 56 56" className="relative h-full w-full">
-        <circle cx="28" cy="28" r="27" fill="var(--color-brand-50)" />
-        <circle className="draw-ring" cx="28" cy="28" r="24" fill="none" stroke="var(--color-brand-600)" strokeWidth="2" strokeLinecap="round" transform="rotate(-90 28 28)" />
-        <path className="draw-tick" d="M18.5 28.5l6.5 6.5 12.5-13" fill="none" stroke="var(--color-brand-600)" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="28" cy="28" r="27" fill="var(--color-accent-50)" />
+        <circle className="draw-ring" cx="28" cy="28" r="24" fill="none" stroke="var(--color-accent-600)" strokeWidth="2" strokeLinecap="round" transform="rotate(-90 28 28)" />
+        <path className="draw-tick" d="M18.5 28.5l6.5 6.5 12.5-13" fill="none" stroke="var(--color-accent-600)" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
   );

@@ -10,4 +10,12 @@
 
 ## Images
 
-None. The logo, favicon, hero panel and OG image are drawn in SVG / JSX in this repo.
+| File | Where it appears | Photographer | Source page | License |
+|---|---|---|---|---|
+| `src/images/hero.jpg` | Home page hero | Antoni Shkraba Studio | https://www.pexels.com/photo/photo-of-a-woman-holding-a-car-key-7144213/ | [Pexels License](https://www.pexels.com/license/) |
+| `assets/og-photo.jpg` | OG / share image | Antoni Shkraba Studio | the same photo, cropped to 520 × 655 | [Pexels License](https://www.pexels.com/license/) |
+
+The source file is the Pexels download at 2400 px wide, served through `next/image` as AVIF or WebP at the rendered
+size. The photo is stock: keep it presented as illustration, never as a specific customer or dealership.
+
+The logo, favicon, apple icon and the rest of the OG image are drawn in SVG / JSX in this repo.
