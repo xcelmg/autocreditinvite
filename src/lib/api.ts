@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
 import { after } from "next/server";
-import { deviceOf, isVisitorId, VISITOR_COOKIE, VISITOR_HEADER, type Device } from "./visitor";
+import { deviceOf, isVisitorId, VISITOR_COOKIE, VISITOR_HEADER, type Device, type Referrer } from "./visitor";
 import type { Details } from "./details";
 
 /*
@@ -114,6 +114,13 @@ export type Channel = "qr" | "web";
 export function trackEvent(code: string, event: FunnelEvent, channel: Channel | undefined): void {
   after(async () => {
     await call("/v1/events", { code, event, channel, ...(await visitorContext()) });
+  });
+}
+
+/** Report a visitor's `visit` for the day (app/api/visit decides when one counts). Runs after the response is sent. */
+export function trackVisit(visitorId: string, channel: Channel, referrer: Referrer): void {
+  after(async () => {
+    await call("/v1/events", { event: "visit", channel, visitorId, device: deviceOf((await headers()).get("user-agent")), referrer });
   });
 }
 
